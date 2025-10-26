@@ -6,30 +6,29 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: blurrt
+      POSTGRES_DB: anecdotes
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
   backend:
-    build: ./backend
-    container_name: blurrt-backend
-    restart: always
-    environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/blurrt
-      - PORT=5000
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: blurrt-backend-prod
     ports:
       - "5000:5000"
     depends_on:
       - db
 
   frontend:
-    build: ./frontend
-    container_name: blurrt-frontend
-    restart: always
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: blurrt-frontend-prod
     ports:
-      - "3000:3000"
+      - "80:80"
     depends_on:
       - backend
 
