@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:15
+    container_name: blurrt-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: anecdotes
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: blurrt-backend-dev
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: blurrt-frontend-dev
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app:cached
+      - /app/node_modules
+
+volumes:
+  db_data:  
